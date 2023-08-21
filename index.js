@@ -6,24 +6,18 @@ import bcrypt from 'bcrypt';
 import  session  from 'express-session';
 import cookieParser from 'cookie-parser';
 import jwt from 'jsonwebtoken'
-import path from 'path';
-import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
+dotenv.config(); // Load environment variables from .env file
+
 const saltRound = 5;
 const app = express();
+const database= process.env.DATABASE;
+const PORT = process.env.PORT;
 
-const __filename = fileURLToPath(import.meta.url);
-
-// Get the directory name
-const __dirname = path.dirname(__filename);
-
-app.use(express.static(path.join(__dirname, '../client/build')));
-
-
-/*
 app.use(
   session({
     key:"userId",
-    secret:"subscribe",
+    secret:process.env.SECRETKEY,
     resave:false,
     saveUninitialized:false,
     cookie:{
@@ -34,36 +28,11 @@ app.use(
    
 
   })
-) */
-
-
-
-
-app.use(
-  session({
-   
-    key: 'userId',
-    secret: 'subscribe',
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      sameSite: false,
-      httpOnly: false,
-      secure: false,
-    },
-  })
-);
+)
 app.use(cookieParser());
 
 
-app.use(express.static(path.join(__dirname, '../client/build')));
-
-app.get('*', function(req, res) {
-  res.sendFile(path.join(__dirname, '../client/build/index.html'));
-});
-
-const PORT = process.env.PORT || 5000
-mongoose.connect('mongodb+srv://SahilMulani:Sahil2165@cluster0.yqlks9v.mongodb.net/').then(
+mongoose.connect(database).then(
   console.log("server conndected")
 )
 
@@ -521,12 +490,6 @@ app.post("delete",(req,res)=>{
 
 
 
-if(process.env.NODE_ENV == "production"){
-  app.use(express.static("client/build"));
-}
-
-
-
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:5000`);
+  console.log(`Server is running on ${PORT}`);
 })
